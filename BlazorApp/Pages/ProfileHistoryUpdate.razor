@@ -1,0 +1,68 @@
+﻿@using BlazorApp.Models;
+@using BlazorApp.Service;
+
+@page "/profilehistory/update/{Id:int}"
+
+@inject NavigationManager NavigationManager
+
+<h3>Edit Profile</h3>
+
+<div>
+    <label>Profile Name:</label>
+    <input @bind="profileToUpdate.ProfileName" />
+</div>
+
+<div>
+    <label>Timestamp:</label>
+    <input @bind="profileToUpdate.Timestamp" type="datetime-local" />
+</div>
+
+<div>
+    <label>User Id:</label>
+    <input @bind="profileToUpdate.UserId" type="number" />
+</div>
+
+<div>
+    <label>Action:</label>
+    <input @bind="profileToUpdate.Action" />
+</div>
+
+<button @onclick="UpdateProfile">Update Profile</button>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private ProfileHistoryModel profileToUpdate = new ProfileHistoryModel();
+
+    [Inject]
+    private ProfileHistoryService ProfileService { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Fetch the existing profile information based on the provided Id
+        profileToUpdate = await ProfileService.GetProfileByIdAsync(Id);
+    }
+
+    private async Task UpdateProfile()
+    {
+        try
+        {
+            int rowsAffected = await ProfileService.UpdateProfileHistoryAsync(profileToUpdate);
+
+            if (rowsAffected > 0)
+            {
+                NavigationManager.NavigateTo("/profilehistory");
+            }
+            else
+            {
+                // Handle unsuccessful update
+                Console.WriteLine("Error: Unable to update profile.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error in UpdateProfile: {ex.Message}");
+        }
+    }
+}

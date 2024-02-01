@@ -1,0 +1,61 @@
+﻿@page "/profilehistory/create"
+@using BlazorApp.Models;
+@using BlazorApp.Service;
+
+<h3>Create New Profile</h3>
+
+<div>
+    <label>Profile Name:</label>
+    <input @bind="newProfile.ProfileName" />
+</div>
+
+<div>
+    <label>Timestamp:</label>
+    <input @bind="newProfile.Timestamp" type="datetime-local" />
+</div>
+
+<div>
+    <label>User Id:</label>
+    <input @bind="newProfile.UserId" type="number" />
+</div>
+
+<div>
+    <label>Action:</label>
+    <input @bind="newProfile.Action" />
+</div>
+
+<button @onclick="CreateProfile">Create Profile</button>
+
+@code {
+    private ProfileHistoryModel newProfile = new ProfileHistoryModel();
+
+    [Inject]
+    private ProfileHistoryService ProfileService { get; set; }
+
+    [Inject]
+    private NavigationManager NavigationManager { get; set; }
+
+    private async Task CreateProfile()
+    {
+        try
+        {
+            int rowsAffected = await ProfileService.InsertProfileHistoryAsync(newProfile);
+
+            if (rowsAffected > 0)
+            {
+                NavigationManager.NavigateTo("/profilehistory");
+            }
+            else
+            {
+                // Handle unsuccessful creation
+                Console.WriteLine("Error: Unable to create profile.");
+            }
+        }
+        catch (Exception ex)
+        {
+            // Handle the exception or log it
+            Console.WriteLine($"Error in CreateProfile: {ex.Message}");
+        }
+    }
+
+}

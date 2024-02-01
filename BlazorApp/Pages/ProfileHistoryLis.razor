@@ -1,0 +1,72 @@
+﻿@page "/profilehistory"
+@using BlazorApp.Models;
+@using BlazorApp.Service;
+
+@inject NavigationManager NavigationManager;
+
+<h3>Profile History List</h3>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Profile Name</th>
+            <th>Timestamp</th>
+            <th>User Id</th>
+            <th>Action</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var profile in profiles)
+        {
+            <tr>
+                <td>@profile.Id</td>
+                <td>@profile.ProfileName</td>
+                <td>@profile.Timestamp</td>
+                <td>@profile.UserId</td>
+                <td>@profile.Action</td>
+                <td>
+                    <button @onclick="() => EditProfile(profile)">Edit</button>
+                    <button @onclick="() => DeleteProfile(profile)">Delete</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<button @onclick="GoToCreatePage">Create New Profile</button>
+
+
+
+@code {
+    private List<ProfileHistoryModel> profiles = new List<ProfileHistoryModel>();
+
+    [Inject]
+    private ProfileHistoryService ProfileService { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        profiles = await ProfileService.GetAllProfileHistoryAsync();
+    }
+
+    //private void EditProfile(ProfileHistoryModel profile)
+    //{
+        // Implement edit functionality
+    //}
+
+    private void DeleteProfile(ProfileHistoryModel profile)
+    {
+        // Implement delete functionality
+    }
+    private void GoToCreatePage()
+    {
+        NavigationManager.NavigateTo("/profilehistory/create");
+    }
+
+    private void EditProfile(ProfileHistoryModel profile)
+    {
+        NavigationManager.NavigateTo($"/profilehistory/update/{profile.Id}");
+    }
+
+
+}
